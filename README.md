@@ -1,6 +1,8 @@
 # SocialNet
 
 This is my SocialNet web application project for CS4451.
+ ### Name: Tran Thanh Dat
+ ### TROY ID: 1695358
 
 I built it with PHP, MySQL, Nginx, and Linux as required. The app allows an admin to create users, users to sign in, view their home page, edit their profile description, view profile pages, and sign out. I tested the project on my Ubuntu VM using Nginx, MySQL, and php8.4-fpm
 
