@@ -1,20 +1,15 @@
 <?php
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 function db()
 {
     static $pdo = null;
-
     if ($pdo !== null) {
         return $pdo;
     }
-
     $config = require __DIR__ . '/../config.php';
     $dsn = 'mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name'] . ';charset=utf8mb4';
-
     try {
         $pdo = new PDO($dsn, $config['db_user'], $config['db_pass'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -24,7 +19,6 @@ function db()
     } catch (PDOException $error) {
         die('Database connection failed. Please check config.php and MySQL.');
     }
-
     return $pdo;
 }
 
@@ -42,24 +36,20 @@ function current_user()
     $statement = db()->prepare('SELECT id, username, fullname, description FROM account WHERE id = ?');
     $statement->execute([$_SESSION['user_id']]);
     $user = $statement->fetch();
-
     if (!$user) {
         $_SESSION = [];
         session_destroy();
         return null;
     }
-
     return $user;
 }
 
 function require_login()
 {
     $user = current_user();
-
     if ($user === null) {
         header('Location: /socialnet/signin.php');
         exit;
     }
-
     return $user;
 }
