@@ -17,7 +17,7 @@ require_login();
             <h1>About</h1>
             <p><strong>Student Name:</strong> Tran Thanh Dat</p>
             <p><strong>Student Number:</strong> TROY ID 1695358</p>
-            <p>SocialNet is a simple PHP and MySQL web application for the university web application assignment.</p>
+            <p>This is my project and information.</p>
         </section>
     </main>
 </body>
