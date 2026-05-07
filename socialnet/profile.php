@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ . '/common.php';
-require_login();
 
-$user = current_user();
+$user = require_login();
 $owner = trim($_GET['owner'] ?? '');
 
 if ($owner === '') {
@@ -33,9 +32,7 @@ $profile = $statement->fetch();
                 <p><strong>Owner Username:</strong> <?= h($profile['username']) ?></p>
                 <p><strong>Owner Full Name:</strong> <?= h($profile['fullname']) ?></p>
                 <h2>Profile Description</h2>
-                <p class="profile-text">
-                    <?= h($profile['description'] ?: 'No profile description yet.') ?>
-                </p>
+                <p class="profile-text"><?= h($profile['description'] ?: 'No profile description yet.') ?></p>
             <?php endif; ?>
         </section>
     </main>

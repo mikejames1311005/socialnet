@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ . '/common.php';
-require_login();
 
-$user = current_user();
+$user = require_login();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description'] ?? '');

@@ -54,8 +54,12 @@ function current_user()
 
 function require_login()
 {
-    if (current_user() === null) {
+    $user = current_user();
+
+    if ($user === null) {
         header('Location: /socialnet/signin.php');
         exit;
     }
+
+    return $user;
 }

@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ . '/common.php';
-require_login();
 
-$user = current_user();
+$user = require_login();
 $statement = db()->prepare('SELECT username, fullname FROM account WHERE id <> ? ORDER BY username');
 $statement->execute([$user['id']]);
 $otherUsers = $statement->fetchAll();

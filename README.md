@@ -1,20 +1,59 @@
 # SocialNet
 
-SocialNet is a simple university PHP web application using PHP, MySQL, Nginx, and Linux.
+This is my SocialNet web application project for the Web Application Mock Project assignment.
+
+I built it with PHP, MySQL, Nginx, and Linux as required. The app allows an admin to create users, users to sign in, view their home page, edit their profile description, view profile pages, and sign out.
+
+I tested the project on my Ubuntu VM using Nginx, MySQL, and php8.4-fpm.
+
+## What Works
+
+- Admin can create new users at `/admin/newuser.php`
+- Users can sign in at `/socialnet/signin.php`
+- After signing in, users are redirected to `/socialnet/index.php`
+- Home page shows the logged-in user's username and full name
+- Home page also shows other users in the system
+- The other users list links to `/socialnet/profile.php?owner=username`
+- Setting page updates the logged-in user's profile description
+- Profile page shows the selected user's profile content
+- About page shows my student name and student number
+- SignOut resets the session and redirects back to Sign In
 
 ## Project Files
 
-- `/admin/newuser.php` creates new users.
-- `/socialnet/signin.php` signs users in.
-- `/socialnet/index.php` is the protected home page.
-- `/socialnet/setting.php` edits the logged-in user's profile description.
-- `/socialnet/profile.php` shows the logged-in user's profile, or another user with `?owner=username`.
-- `/socialnet/about.php` shows static student information.
-- `/socialnet/signout.php` signs the user out.
-- `/socialnet/menubar.php` is the common menu.
-- `/socialnet/common.php` contains the shared database connection, session helper, login check, and escaping helper.
-- `/db.sql` creates the `socialnet` database and `account` table.
-- `/config.php` stores database connection settings.
+- `db.sql` creates the `socialnet` database and the `account` table.
+- `config.php` stores the database connection settings.
+- `socialnet/common.php` contains the database connection, session helper, login check, and output escaping helper.
+- `socialnet/menubar.php` contains the shared menu for the main pages.
+- `admin/newuser.php` is the admin page for creating users.
+- `socialnet/signin.php`, `index.php`, `setting.php`, `profile.php`, `about.php`, and `signout.php` are the required SocialNet pages.
+
+## Database
+
+The database name is `socialnet`.
+
+The only table is `account`.
+
+The table columns are:
+
+- `id`
+- `username`
+- `fullname`
+- `password`
+- `description`
+
+Passwords are saved with `password_hash()` when users are created, and checked with `password_verify()` when users sign in.
+
+## Small Setup Notes From My Testing
+
+While setting this up on my VM, I ran into a few common environment issues:
+
+- SSH did not work at first until `openssh-server` was installed and running.
+- Nginx had a duplicate `default_server` configuration because an old default config was still enabled.
+- The browser could not access the site until I allowed port 80 through UFW.
+- The PHP-FPM socket had to match my PHP version. In my VM, it was `php8.4-fpm.sock`.
+
+I included the setup steps below so the project can be tested again in a new Ubuntu environment.
 
 ## Linux Setup With Nginx, MySQL, and PHP-FPM
 
@@ -24,16 +63,28 @@ These commands are for Ubuntu or a similar Linux VM.
 
 ```bash
 sudo apt update
-sudo apt install nginx mysql-server php-fpm php-mysql git
+sudo apt install nginx mysql-server php-fpm php-mysql git curl
+```
+
+If SSH access is needed and it is not running yet:
+
+```bash
+sudo apt install openssh-server
+sudo systemctl enable --now ssh
 ```
 
 2. Put the project in `/var/www/socialnet`:
 
 ```bash
 cd /var/www
+if [ -d socialnet ]; then
+    sudo mv socialnet "socialnet_backup_$(date +%Y%m%d_%H%M%S)"
+fi
 sudo git clone https://github.com/mikejames1311005/socialnet.git socialnet
 sudo chown -R www-data:www-data /var/www/socialnet
 ```
+
+The backup command is only needed if an old copy of the project already exists.
 
 3. Create the database and table:
 
@@ -48,10 +99,19 @@ sudo mysql < db.sql
 sudo mysql
 ```
 
-Then run these SQL commands inside the MySQL prompt:
+Then run these SQL commands inside the MySQL prompt. Replace `your_mysql_password` with the password you want to use:
 
 ```sql
 CREATE USER 'socialnet_user'@'localhost' IDENTIFIED BY 'your_mysql_password';
+GRANT ALL PRIVILEGES ON socialnet.* TO 'socialnet_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+If the user already exists, use this instead:
+
+```sql
+ALTER USER 'socialnet_user'@'localhost' IDENTIFIED BY 'your_mysql_password';
 GRANT ALL PRIVILEGES ON socialnet.* TO 'socialnet_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
@@ -64,17 +124,29 @@ EXIT;
 'db_pass' => 'your_mysql_password',
 ```
 
-6. Create an Nginx site:
+6. Check the PHP-FPM socket name:
+
+```bash
+ls /run/php/
+```
+
+For example, my VM used:
+
+```text
+php8.4-fpm.sock
+```
+
+7. Create the Nginx site:
 
 ```bash
 sudo nano /etc/nginx/sites-available/socialnet
 ```
 
-Example configuration:
+Example configuration. Change `php8.4-fpm.sock` if your VM has a different PHP version:
 
 ```nginx
 server {
-    listen 80;
+    listen 80 default_server;
     server_name _;
     root /var/www/socialnet;
     index index.php index.html;
@@ -85,7 +157,7 @@ server {
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
     }
 
     location ~ /(config.php|db.sql|README.md)$ {
@@ -94,24 +166,23 @@ server {
 }
 ```
 
-If your VM uses a different PHP version, check the socket name with:
+8. Enable the site and restart Nginx:
 
 ```bash
-ls /run/php/
-```
-
-Then replace `php8.3-fpm.sock` with the socket that exists on your VM.
-
-7. Enable the site and restart Nginx:
-
-```bash
-sudo ln -s /etc/nginx/sites-available/socialnet /etc/nginx/sites-enabled/socialnet
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo ln -sf /etc/nginx/sites-available/socialnet /etc/nginx/sites-enabled/socialnet
 sudo nginx -t
 sudo systemctl restart nginx
-sudo systemctl restart php8.3-fpm
+sudo systemctl restart php8.4-fpm
 ```
 
-Use your real PHP-FPM service name if it is not `php8.3-fpm`.
+Use your real PHP-FPM service name if it is not `php8.4-fpm`.
+
+If UFW is enabled, allow the browser to reach Nginx:
+
+```bash
+sudo ufw allow 80/tcp
+```
 
 ## Testing
 
@@ -140,7 +211,7 @@ http://your-vm-ip/socialnet/signin.php
 - `/socialnet/profile.php` shows your own profile.
 - `/socialnet/profile.php?owner=another_username` shows another user's profile.
 - `/socialnet/setting.php` saves profile description changes.
-- `/socialnet/about.php` shows the static student information.
+- `/socialnet/about.php` shows the student name and student number.
 - `/socialnet/signout.php` signs out and redirects to sign in.
 
 5. Confirm protected pages redirect to sign in after signing out:
@@ -150,3 +221,9 @@ http://your-vm-ip/socialnet/index.php
 http://your-vm-ip/socialnet/setting.php
 http://your-vm-ip/socialnet/profile.php
 ```
+
+## Notes
+
+This project does not use Laravel, Composer, Docker, or any PHP framework. I kept it as simple PHP files so the code is easier to explain.
+
+The `db.sql` file only creates the database and table. It does not insert test users, so the lecturer can create fresh users from `/admin/newuser.php`.
