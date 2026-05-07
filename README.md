@@ -1,10 +1,8 @@
 # SocialNet
 
-This is my SocialNet web application project for the Web Application Mock Project assignment.
+This is my SocialNet web application project for CS4451.
 
-I built it with PHP, MySQL, Nginx, and Linux as required. The app allows an admin to create users, users to sign in, view their home page, edit their profile description, view profile pages, and sign out.
-
-I tested the project on my Ubuntu VM using Nginx, MySQL, and php8.4-fpm.
+I built it with PHP, MySQL, Nginx, and Linux as required. The app allows an admin to create users, users to sign in, view their home page, edit their profile description, view profile pages, and sign out. I tested the project on my Ubuntu VM using Nginx, MySQL, and php8.4-fpm
 
 ## What Works
 
@@ -224,6 +222,4 @@ http://your-vm-ip/socialnet/profile.php
 
 ## Notes
 
-This project does not use Laravel, Composer, Docker, or any PHP framework. I kept it as simple PHP files so the code is easier to explain.
-
-The `db.sql` file only creates the database and table. It does not insert test users, so the lecturer can create fresh users from `/admin/newuser.php`.
+This project does not use Laravel, Composer, Docker, or any PHP framework. I kept it as simple PHP files so the code is easier to explain. The `db.sql` file only creates the database and table. It does not insert test users, so you can create fresh users from `/admin/newuser.php`.
