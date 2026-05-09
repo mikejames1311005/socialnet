@@ -21,12 +21,12 @@ I built it with PHP, MySQL, Nginx, and Linux as required. The app allows an admi
 
 ## Project Files
 
-- `db.sql` creates the `socialnet` database and the `account` table.
-- `config.php` stores the database connection settings.
-- `socialnet/common.php` contains the database connection, session helper, login check, and output escaping helper.
-- `socialnet/menubar.php` contains the shared menu for the main pages.
-- `admin/newuser.php` is the admin page for creating users.
-- `socialnet/signin.php`, `index.php`, `setting.php`, `profile.php`, `about.php`, and `signout.php` are the required SocialNet pages.
+- `db.sql` creates the `socialnet` database and the `account` table
+- `config.php` stores the database connection settings
+- `socialnet/common.php` contains the database connection, session helper, login check, and output escaping helper
+- `socialnet/menubar.php` contains the shared menu for the main pages
+- `admin/newuser.php` is the admin page for creating users
+- `socialnet/signin.php`, `index.php`, `setting.php`, `profile.php`, `about.php`, and `signout.php` are the required SocialNet pages
 
 ## Database
 
@@ -48,10 +48,10 @@ Passwords are saved with `password_hash()` when users are created, and checked w
 
 While setting this up on my VM, I ran into a few common environment issues:
 
-- SSH did not work at first until `openssh-server` was installed and running.
-- Nginx had a duplicate `default_server` configuration because an old default config was still enabled.
-- The browser could not access the site until I allowed port 80 through UFW.
-- The PHP-FPM socket had to match my PHP version. In my VM, it was `php8.4-fpm.sock`.
+- SSH did not work at first until `openssh-server` was installed and running
+- Nginx had a duplicate `default_server` configuration because an old default config was still enabled
+- The browser could not access the site until I allowed port 80 through UFW
+- The PHP-FPM socket had to match my PHP version. In my VM, it was `php8.4-fpm.sock`
 
 I included the setup steps below so the project can be tested again in a new Ubuntu environment.
 
@@ -224,4 +224,4 @@ http://your-vm-ip/socialnet/profile.php
 
 ## Notes
 
-This project does not use Laravel, Composer, Docker, or any PHP framework. I kept it as simple PHP files so the code is easier to explain. The `db.sql` file only creates the database and table. It does not insert test users, so you can create fresh users from `/admin/newuser.php`.
+This project I kept it as simple PHP files so the code is easier to explain. The `db.sql` file only creates the database and table. It does not insert test users, so you can create fresh users from `/admin/newuser.php`.
