@@ -8,6 +8,12 @@ if ($owner === '') {
     $owner = $user['username'];
 }
 
+if ($owner !== $user['username']) {
+    http_response_code(403);
+    echo 'Not authorized to view this profile.';
+    exit;
+}
+
 $statement = db()->prepare('SELECT username, fullname, description FROM account WHERE username = ?');
 $statement->execute([$owner]);
 $profile = $statement->fetch();
