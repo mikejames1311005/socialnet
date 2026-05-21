@@ -1,6 +1,13 @@
 <?php
 require_once __DIR__ . '/../socialnet/common.php';
 
+$user = require_login();
+if ($user['username'] !== 'admin') {
+    http_response_code(403);
+    echo 'Not authorized.';
+    exit;
+}
+
 $message = '';
 $error = '';
 $username = '';
